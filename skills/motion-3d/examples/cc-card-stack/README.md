@@ -24,7 +24,7 @@ A 3D countdown in Canvas Commons, about 4 s at 1920×1080, 60 fps (246 frames). 
 Needs Node 20.19+ (or 22.12+), system Chrome and `ffmpeg` on the PATH.
 
 ```bash
-npm install            # or once at the repo root, which serves every example
+npm install
 npm start              # editor at http://localhost:9101, with the live slider panel
 npm run smoke          # headless pre-flight: page errors, Render button, WebGL
 npm run render         # output/project.mp4 + output/project-sheet.jpg

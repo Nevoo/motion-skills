@@ -27,7 +27,7 @@ One continuous three.js camera flight inside Canvas Commons, about 10 s at 1920Ã
 Needs Node 20.19+ (or 22.12+), system Chrome and `ffmpeg` on the PATH.
 
 ```bash
-npm install            # or once at the repo root, which serves every example
+npm install
 npm start              # editor at http://localhost:9102, with the live slider panel
 npm run smoke          # headless pre-flight: page errors, Render button, WebGL
 npm run render         # output/project.mp4 + output/project-sheet.jpg

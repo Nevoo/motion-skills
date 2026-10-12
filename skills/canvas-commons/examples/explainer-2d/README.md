@@ -25,7 +25,7 @@ A calm 2D product explainer in Canvas Commons, about 8 s at 1920×1080, 60 fps (
 Needs Node 20.19+ (or 22.12+), system Chrome and `ffmpeg` on the PATH.
 
 ```bash
-npm install            # or once at the repo root, which serves every example
+npm install
 npm start              # editor at http://localhost:9103, with the live slider panel
 npm run smoke          # headless pre-flight: page errors, Render button, WebGL
 npm run render         # output/project.mp4 + output/project-sheet.jpg
