@@ -1,0 +1,26 @@
+{
+  "version": 0,
+  "timeEvents": [
+    {
+      "name": "typing_starts",
+      "targetTime": 0.4
+    },
+    {
+      "name": "click",
+      "targetTime": 1.55
+    },
+    {
+      "name": "first_whip",
+      "targetTime": 2.5
+    },
+    {
+      "name": "second_whip",
+      "targetTime": 4.9
+    },
+    {
+      "name": "end",
+      "targetTime": 7.8
+    }
+  ],
+  "seed": 890327740
+}

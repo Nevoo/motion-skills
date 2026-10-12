@@ -1,0 +1,8 @@
+node_modules/
+.vite/
+output/
+dist/
+.DS_Store
+*.log
+.dev/
+.private-terms

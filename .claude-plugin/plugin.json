@@ -1,0 +1,19 @@
+{
+  "name": "motion-skills",
+  "description": "3D-first motion graphics skills for coding agents: engine-agnostic motion and 3D doctrine, Canvas Commons and HyperFrames hosts, drop-in assets and a render harness.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Rouven Lührs"
+  },
+  "homepage": "https://github.com/Nevoo/motion-skills",
+  "repository": "https://github.com/Nevoo/motion-skills",
+  "keywords": [
+    "motion-graphics",
+    "animation",
+    "three.js",
+    "canvas-commons",
+    "motion-canvas",
+    "kinetic-typography"
+  ],
+  "license": "MIT"
+}

@@ -1,0 +1,23 @@
+{
+  "name": "motion-skills-dev",
+  "private": true,
+  "type": "module",
+  "description": "Shared dev dependencies: one install here serves the example projects under skills/*/examples. Each example keeps its own package.json for standalone use.",
+  "scripts": {
+    "lint": "node scripts/lint-skills.mjs"
+  },
+  "devDependencies": {
+    "@canvas-commons/2d": "0.4.0",
+    "@canvas-commons/core": "0.4.0",
+    "@canvas-commons/editor": "0.4.0",
+    "@canvas-commons/vite-plugin": "0.4.0",
+    "@canvas-commons/webcodecs": "0.4.0",
+    "@types/three": "0.186.0",
+    "hyperframes": "0.8.82",
+    "playwright": "1.64.0",
+    "three": "0.186.1",
+    "typescript": "5.9.3",
+    "vite": "8.3.4"
+  },
+  "license": "MIT"
+}

@@ -1,0 +1,14 @@
+{
+  "name": "motion-skills",
+  "owner": {
+    "name": "Rouven Lührs"
+  },
+  "plugins": [
+    {
+      "name": "motion-skills",
+      "source": "./",
+      "description": "3D-first motion graphics skills: motion-craft, motion-3d and canvas-commons."
+    }
+  ],
+  "description": "Motion graphics skills for coding agents, versioned as one plugin."
+}
