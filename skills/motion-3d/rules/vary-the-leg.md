@@ -31,21 +31,21 @@ Four identical pushes make the viewer predict the fifth, and prediction turns mo
 Write the leg plan before keying anything. One line per leg:
 
 ```
-leg  verb      axis      dur   roll    fov kick  lands on
-1    push      -z        0.50  +0.04   +7°       word 2
-2    swoop     -z,-y     0.45  -0.04   +7°       word 3
-3    punch     -z        0.30   0      +5°       word 4   (short, fast)
-4    arc       x around   0.80  +0.03   0         the stack, turned
-5    pull      +z        1.10  -0.08   0         final frame
+leg  verb      axis       curve      dur   roll    fov kick  lands on
+1    push      -z         RAMP       0.75  +0.04   +7°       word 2
+2    swoop     -z,-y      RAMP       0.85  -0.04   +7°       word 3
+3    punch     -z         RAMP       0.40   0      +5°       word 4   (short, fast)
+4    arc       x around   IN_OUT     0.90  +0.03   0         the stack, turned
+5    pull      +z         RAMP_LONG  1.15  -0.08   0         final frame (the one reveal)
 ```
 
-Alternate the roll sign between consecutive legs. Vary durations: a fast punch between two longer flights reads as rhythm, not repetition. Reserve the biggest move (longest pull, widest swoop) for the last one or two legs.
+Each line becomes one `legPath` leg (`{dur, curve, arc, roll, fov}`) and one landing ([flight-paths.md](flight-paths.md)). Alternate the roll sign between consecutive legs. Vary durations: a fast punch between two longer flights reads as rhythm, not repetition. Reserve the biggest move (longest pull, widest swoop) for the last one or two legs.
 
 ## Values
 
 | Dimension | Vary between legs by |
 |---|---|
-| Duration | noticeably (e.g. 0.3 → 0.45 → 0.8 s); equal durations only for a deliberate group, such as three names in a row. By class: stage push or punch 0.5–0.9 s; 3D stack punch 0.38–0.45 s; push through a word inside a continuously creeping 3D flight 0.3–0.6 s; stage-to-stage whips 0.7–0.9 s |
+| Duration | noticeably (e.g. 0.4 → 0.75 → 1.15 s); equal durations only for a deliberate group, such as three names in a row. Kinetic flight: punch or push through a word ≈ 0.4 s, whip 0.7–0.9 s, the one reveal up to ≈ 1.15 s; exception: a tunnel leg, read during the flight, replaces the reveal at 1.5–2 s. Calm spline: 0.8–1.75 s. Stage push or punch outside a flight 0.5–0.9 s; 3D stack punch 0.38–0.45 s |
 | Roll | sign flip, or 0 ↔ ±0.03–0.04 rad |
 | fov kick | 0 / +5 / +8° |
 | Path shape | straight vs arc vs descending |
@@ -55,7 +55,7 @@ Alternate the roll sign between consecutive legs. Vary durations: a fast punch b
 - **Varying only the content, not the move.** New words on the same push still feel like the same beat repeated.
 - **Direction reversals.** Flying forward, then back along the same axis, reads as an undo. Use a pull only as a reveal or an ending.
 - **Every leg a hero.** If every leg has a roll, a kick and a swoop, nothing stands out. Keep one or two plain pushes as the baseline.
-- **Easing by class.** Stage push or punch: OUT or IN_OUT. 3D stack punch: RAMP. Push through a word inside a continuously creeping 3D flight: RAMP, RAMP_LONG or OUT. Repositioning (arc, truck): IN_OUT or GLIDE. Camera curves are OUT, IN_OUT, RAMP, RAMP_LONG, GLIDE; ACCEL only as the exit side of a velocity-matched cut; never BOUNCE or spring/back on a camera.
+- **Easing by class.** Flight legs leave a drifting hold, so their curve must start and end at zero slope: RAMP for punches and whips, RAMP_LONG for the reveal or a long pan, IN_OUT for a soft reposition (arc, truck). GLIDE only on leg 0 when the camera moves from the first frame; never OUT, which leaves at full speed. Tweened stage moves outside a flight: OUT or IN_OUT for a push, RAMP between stages. ACCEL only as the exit side of a velocity-matched cut; never BOUNCE or spring/back on a camera.
 
 ## See also
 

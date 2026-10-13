@@ -61,7 +61,7 @@ const punch = (t: number) => ({
 | long linked glide (camera with a drawing line) | IN_OUT | 2.5–3.5s |
 | stage push or punch, e.g. a punch-in on a click target (IN_OUT, zoom 1.4–1.6, ~0.55s) | OUT or IN_OUT | 0.5–0.9s |
 | 3D stack punch (`motion-3d`, punch through a stack) | RAMP | 0.38–0.45s |
-| push through a word inside a continuously creeping 3D flight (`motion-3d`, vary the leg) | RAMP, RAMP_LONG or OUT | 0.3–0.6s |
+| push through a word inside a continuously creeping 3D flight (`motion-3d`, vary the leg) | RAMP or RAMP_LONG | 0.3–0.6s |
 | pointer travel inside the frame | OUT | 0.4–0.6s |
 
 The three push and punch classes are the same ones listed in [vary-the-move](vary-the-move.md).

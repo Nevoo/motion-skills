@@ -6,7 +6,7 @@ tags: [formation, choreography, rotation, convergence]
 
 # Formation by bearing
 
-**Use when:** N scattered elements converge into a ring, grid, logo lockup or cluster, possibly spinning once formed.
+**Use when:** N scattered elements converge into a ring, grid, logo lockup or cluster, possibly spinning once formed, including the ending, when the last line's glyphs break apart and converge into the logo.
 
 ## How it works
 
@@ -15,6 +15,8 @@ If slots are assigned in array order, elements cross each other's paths on the w
 If the formed shape spins (a loading ring, an orbiting cluster), the spin is **one continuous arc spanning convergence and spin**. Its IN_OUT slow start doubles as the spin-up while elements converge, and it slows to rest at the end of the passage on a multiple of the formation's symmetry angle (pentagon 72°, hexagon 60°). Form, full stop, spin up is three motions where the viewer expects one.
 
 Rotation during convergence is only a problem with array-order slots: crossing paths plus orbit is chaos. With bearing-matched slots it reads as a coherent swirl.
+
+**At the ending, converge what is already on screen.** When the formation is the logo, the converging elements are the motif's own population: the last line read, broken into its dots or strokes, not a new batch spawned for the lockup. The mark forms where the line was, in the frame the camera already holds; a camera move from the text to a logo formed elsewhere is a cut in disguise ([last-read-becomes-logo](last-read-becomes-logo.md)).
 
 ## Recipe
 
@@ -70,9 +72,11 @@ function itemAt(t: number, i: number, start: P[], slotOf: number[], slots: P[], 
 - **Flying to static slots while the formation rotates.** Elements arrive at the wrong spots and snap. Target the rotated slot positions.
 - **Stopping between formation and spin.** Three motions instead of one.
 - **Ending off-symmetry.** The final pose looks crooked.
+- **A new batch of elements for the logo.** Converge the elements the viewer has been watching.
 
 ## See also
 
 - [linear-reads-cheap](linear-reads-cheap.md): rotation as one arc
 - [stagger-waves](stagger-waves.md)
 - [signature-motif](signature-motif.md)
+- [last-read-becomes-logo](last-read-becomes-logo.md): the logo formed from the last line

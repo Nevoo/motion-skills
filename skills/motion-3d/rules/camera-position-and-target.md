@@ -35,7 +35,7 @@ if (camera.fov !== s.fov) { camera.fov = s.fov; camera.updateProjectionMatrix();
 camera.updateMatrixWorld();             // fades that read the camera pose need it now
 ```
 
-`applyCamera(camera, state)` in [../assets/camera-path.ts](../assets/camera-path.ts) does exactly this.
+`applyCamera(camera, state)` in [../assets/camera-path.ts](../assets/camera-path.ts) does exactly this, for a state from `legPath` ([../assets/legs.ts](../assets/legs.ts), the kinetic default) or from `cameraPath` (the calm spline).
 
 Why this order: `lookAt` overwrites the rotation from position and target, so a roll applied earlier is lost. A roll applied after it always means "twist around the line of sight", whatever the aim.
 
@@ -62,13 +62,13 @@ Turning a **group** (`group.rotation.y = 0.13`) shows a stack as an object witho
 
 - **Target on the camera's vertical line.** `lookAt` degenerates when the view direction is parallel to `up`. For straight-down shots, offset the target slightly, or set `up` to (0, 0, -1) for that move only.
 - **fov animated but projection not updated.** Call `updateProjectionMatrix()` whenever fov changes. The Canvas Commons bridge node updates aspect every frame, but not your fov.
-- **Overshoot on the camera** carries the whole set past its mark and pulls it back. The viewer feels the frame lurch instead of feeling speed. Camera curves are OUT, IN_OUT, RAMP, RAMP_LONG, GLIDE; ACCEL only as the exit side of a velocity-matched cut; never BOUNCE or spring/back on a camera. (Curve definitions: the `motion-craft` skill.)
+- **Overshoot on the camera** carries the whole set past its mark and pulls it back. The viewer feels the frame lurch instead of feeling speed. Flight legs use RAMP, RAMP_LONG or IN_OUT, with GLIDE only on a leg 0 that moves from the first frame ([flight-paths.md](flight-paths.md)). Tweened stage moves outside a flight may also use OUT. ACCEL only as the exit side of a velocity-matched cut; never BOUNCE or spring/back on a camera. (Curve definitions: the `motion-craft` skill.)
 - **Mixing a position tween with a separate lookAt tween of different length** makes the swing appear and vanish mid-move. Give both the same duration and curve unless the swing is the point.
 
 ## See also
 
 - [frame-by-fill.md](frame-by-fill.md): where to put the position
-- [flight-paths.md](flight-paths.md): keying the pose over time
+- [flight-paths.md](flight-paths.md): the pose over time (landings and ramped legs, or a calm spline)
 - [landing-poses-baked.md](landing-poses-baked.md)
 
 *Idea adapted from HyperFrames (Apache-2.0).*

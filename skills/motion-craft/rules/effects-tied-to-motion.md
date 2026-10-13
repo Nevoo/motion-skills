@@ -14,6 +14,8 @@ An effect with no cause reads as decoration. An exposure flash on every beat bec
 
 **Drive effects from a speed signal.** Measure the camera's speed from its own position function, normalise it over the piece, and scale every effect by it. Effects then appear during whips and are exactly zero at rest.
 
+**Measure the speed the viewer sees.** Under a whole-frame time remap ([time-remap-ramps](time-remap-ramps.md)), on-screen speed is the action-time speed times the remap rate, |pos'(τ)|·r(t). Measure it from the composed function `cameraZ(warp.tau(t))`, so the slow-motion hang goes quiet and the snap after it smears.
+
 **Light accents get one hero moment.** A flash, a bloom boost or a streak works once per piece, on the moment that matters (the logo lands, the camera punches through the final plane). Repeated, it becomes noise.
 
 ## Blur budget
@@ -58,7 +60,7 @@ const fx = (t: number) => ({
 });
 ```
 
-`V_FLOOR` (the camera's cruise speed) keeps steady travel and slow drifts at zero; a `SPEED_CURVE` above 1 keeps medium moves clean so the effect peaks only in whips. `HERO_SNAPS` lists the one to three hero windows. Because everything is computed from t alone, it seeks correctly and renders the same in any frame order.
+With a time remap, `cameraZ` in this recipe is the composed `cameraZ(warp.tau(t))` and `vMax` is taken after the remap. `V_FLOOR` (the camera's cruise speed) keeps steady travel and slow drifts at zero; a `SPEED_CURVE` above 1 keeps medium moves clean so the effect peaks only in whips. `HERO_SNAPS` lists the one to three hero windows. Because everything is computed from t alone, it seeks correctly and renders the same in any frame order.
 
 ## Values
 
@@ -80,6 +82,7 @@ Tuned starting points from a speed-driven 3D reel: speed exponent ~1.35 (higher 
 - **Blur keyed by hand per tween.** It drifts out of sync when timing changes; derive it from speed.
 - **Effects that need previous-frame history** (feedback trails, temporal accumulation) in a seekable or parallel renderer. They differ when frames render out of order. Rebuild them from t.
 - **Blurring a container that doesn't move.** Point the effect at what moves.
+- **Speed measured in action time under a time remap.** The hang smears and the snap stays clean, the opposite of what the viewer sees. Include r(t).
 - **An always-on grain or glitch layer.** Still decoration (no-hud-chrome).
 
 ## See also
@@ -87,6 +90,7 @@ Tuned starting points from a speed-driven 3D reel: speed exponent ~1.35 (higher 
 - [no-hud-chrome](no-hud-chrome.md)
 - [column-whip](column-whip.md): where speed peaks in a whip
 - [kinetic-headlines](kinetic-headlines.md): type arrives crisp
+- [time-remap-ramps](time-remap-ramps.md): on-screen speed under a time remap
 - WebGL passes, supersampling and render setup: `motion-3d`.
 
 *Idea adapted from HyperFrames (Apache-2.0).*

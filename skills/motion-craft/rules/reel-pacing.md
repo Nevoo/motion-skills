@@ -27,14 +27,14 @@ Two registers share one discipline (named curves, continuity, morphs) and differ
 Reel rules:
 
 - **Every hand-off overlaps.** The next element starts before the last one settles.
-- **No long holds.** Reading happens during builds (word by word); the hold after the last word is a read pause, 0.2–0.3s.
-- **The pause test passes everywhere** (continuous-over-cut): on any frame, something that matters is still moving.
+- **No long holds.** Reading happens during builds (word by word); the read pause after the last word is 0.2–0.3s, measured to the moment the camera *visibly* moves. A RAMP leg lingers near-still for over a third of its length before it travels, and that linger counts toward the pause: before a RAMP camera leg the hold is 0–0.1s, and a long leg leaves before the last word lands.
+- **The pause test passes everywhere** (continuous-over-cut): on any frame, the copy being read or the camera is visibly moving. Background dots and a slow drift don't count.
 - **Vary the lengths.** A long build next to a short whip makes both read; uniform durations are a metronome (vary-the-move).
 - **The final lockup holds** long enough to read, about 1–1.5s, with a slow drift or creep that is still moving on the very last frame, so it never reads as a freeze. It is the one long hold.
 
 ## Recipe: a dead-spot audit
 
-List every tween as a time span and look for gaps where nothing moves.
+List every tween as a time span and look for gaps where nothing moves. Leave drifts and background fields out of the list: they don't count as motion.
 
 ```ts
 type Span = {start: number; end: number};
@@ -54,6 +54,8 @@ function deadSpots(tweens: Span[], maxRest = 0.3): Span[] {
 
 Run it with `maxRest` 0.3 for a reel and 0.5 for an explainer. Every gap it reports is either a deliberate read pause or a dead spot to fill with an overlap.
 
+The read pause has a second check: the time from each last word landing until the camera visibly moves (15% of its peak speed, so a RAMP's linger counts) stays under about 0.3s in a reel. Both checks run before any render is shown ([verify-facts](../process/verify-facts.md)); for a 3D piece, `motion-3d` → `assets/timing-audit.ts` runs them on the real state.
+
 ## Values
 
 | moment | reel | explainer |
@@ -62,7 +64,7 @@ Run it with `maxRest` 0.3 for a reel and 0.5 for an explainer. Every gap it repo
 | stage-to-stage camera | RAMP whip, 0.7–0.9s (0.85s tuned) | ~1.05s IN_OUT glide |
 | word-by-word stagger | 0.08–0.12s | n/a |
 | click press, release | 0.07s, 0.16–0.18s | same |
-| hold between moments | 0.2–0.3s | ~0.4s |
+| hold between moments | 0.2–0.3s until the next move is visible; 0–0.1s before a RAMP leg, whose linger counts | ~0.4s |
 | final lockup hold | ~1–1.5s | ~1.5s |
 
 ## Pitfalls

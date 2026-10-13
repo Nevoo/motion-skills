@@ -25,11 +25,12 @@ Why: one writer means one place to look when a frame is wrong. Any frame can be 
 Engine-agnostic core:
 
 ```ts
-import {applyCamera, cameraPath} from './camera-path';
+import {applyCamera} from './camera-path';
+import {legPath} from './legs';
 
 interface State { appear: number[]; fade: number; }
 const state: State = {appear: WORDS.map(() => 0), fade: 1};   // tweened by the host
-const path = cameraPath(CAM_KEYS);                             // computed from t
+const path = legPath(LANDINGS, LEGS, {fov: FOV});              // computed from t; cameraPath(KEYS) for a calm piece
 
 function apply(t: number) {
   applyCamera(camera, path.at(t));

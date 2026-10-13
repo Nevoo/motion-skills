@@ -1,10 +1,36 @@
 # Verify facts, not feel
 
-**Use when:** after every render or significant edit, and before reporting anything as done.
+**Use when:** after every render or significant edit, before showing anything to the human, and before reporting anything as done.
 
 ## What frames can and cannot verify
 
 Frames verify facts: the layout is right, the fonts loaded, nothing is clipped, every section is present, the background stays constant, the render is complete. Frames cannot verify feel: whether a whip hits, whether a wave flows. The agent cannot judge feel from frames, so it never renders to judge feel ([live tuning](live-tuning.md) does that). It renders to verify facts.
+
+## Before anything is shown
+
+**Final timing only.** A test render gets judged as the piece. Nobody watches past placeholder timing, and "the timing isn't final yet" doesn't survive the first viewing. So anything shown to the human runs on final timing, and only after the ["it doesn't feel premium" review](../SKILL.md#review-it-doesnt-feel-premium) and the audits below have passed. Renders made to check a technique (does the exporter finish, does the shader compile) are for the fact checks and are not shown as the piece.
+
+**Observed failure:** a test render with placeholder timing was shown, and the piece was judged on it.
+
+**Timing audit.** It runs on the timeline, before any render is shown:
+
+- **Dead spots:** gaps longer than a read pause where neither the copy nor the camera moves. Drifts and background fields don't count as motion. The audit is in [reel-pacing](../rules/reel-pacing.md).
+- **Read gaps:** the time from each line's last word landing until the camera visibly moves, at most about 0.3s in a reel (the read pause in reel-pacing). A longer gap is the camera waiting on text that has already been read.
+
+```ts
+type Speed = (t: number) => number;
+
+// Seconds from a line's last word landing until the camera moves at a visible speed.
+function readGap(landsAt: number, speed: Speed, visible: number, end: number, step = 1 / 240): number {
+  for (let t = landsAt; t <= end; t += step) if (speed(t) >= visible) return t - landsAt;
+  return Infinity;
+}
+
+const lateMoves = (lands: number[], speed: Speed, visible: number, end: number, maxGap = 0.3) =>
+  lands.map(at => ({at, gap: readGap(at, speed, visible, end)})).filter(g => g.gap > maxGap && Number.isFinite(g.gap));
+```
+
+`lands` and `end` are in output seconds. `speed(t)` is the camera's speed from its state function; for a tweened camera, a central difference of its position over ±1/240s works. `visible` is 15% of that speed's peak over the piece, the threshold `motion-3d` → `assets/timing-audit.ts` uses, so a drift never counts. The gap ends when the camera visibly moves, not when a move starts: a RAMP move stays near-still for over a third of its length, and that linger is part of the pause. The final lockup has no move after it, so its infinite gap is skipped. For a 3D piece, run `auditTiming` from that asset instead; it reports both checks from the real state.
 
 ## The checks
 
@@ -84,7 +110,7 @@ function keepsMoving(fs: Frame[], maxStatic: number): boolean {
 
 ## Reporting
 
-Claim "done" only with evidence: the frame-count line, the contact sheet's path, the freeze output, the assertion results. Report feel as "ready for the human to judge", never as verified.
+Claim "done" only with evidence: the timing audit's output, the frame-count line, the contact sheet's path, the freeze output, the assertion results. Report feel as "ready for the human to judge", never as verified.
 
 Render and smoke-check scripts for Canvas Commons live in `canvas-commons` (`scripts/render.mjs`, `scripts/smoke.mjs`). HyperFrames pieces render with the official HyperFrames CLI. WebGL-specific render settings (GPU flags, pinned pixel ratio, readiness) are in `motion-3d`.
 

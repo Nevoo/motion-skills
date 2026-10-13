@@ -83,7 +83,7 @@ function setParam(key, value) {
 
 A GSAP tween can't report a property's value at an earlier time, but speed FX and trails need exactly that. Either:
 
-- compute that channel from a pure function (a `cameraPath`, or a constant creep summed under eased moves from the first frame), or
+- compute that channel from a pure function (a `legPath` or `cameraPath`, or a constant creep summed under eased moves from the first frame), or
 - record every tween you add to a tracked channel (start, duration, from, to, ease) as you add it. A small `trackAt(name, t)` then replays the segments for any `t`.
 
 Then `v(t) = (x(t + h) − x(t − h)) / 2h` works at any seek position. See [../rules/speed-driven-fx.md](../rules/speed-driven-fx.md).

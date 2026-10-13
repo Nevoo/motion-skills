@@ -8,6 +8,8 @@ tags: [typography, flight, transition, per-letter]
 
 **Use when:** frame-filling words sit along the camera's path and each push should break through the word on screen into the one waiting behind it.
 
+**Optional look, not a default.** The door split is a set piece, like [tunnel.md](tunnel.md), [drum-ratchet.md](drum-ratchet.md) and [path-through-depth.md](path-through-depth.md). A piece uses at most two, each chosen because the subject calls for it: here, a run of single words the camera breaks through. A flight with no set piece is complete.
+
 ## How it works
 
 Each word is baked into a per-letter atlas, with one plane per letter ([text-as-texture.md](text-as-texture.md)). A split value `s` (0 → 1) runs over the push that flies through the word. For each letter, by its horizontal offset `cx` from the word centre:
@@ -66,5 +68,5 @@ During the split, draw two or three faint copies of each letter at the poses it 
 
 ## See also
 
-- [flight-paths.md](flight-paths.md) (the creep + pushes variant), [depth-pop.md](depth-pop.md)
+- [flight-paths.md](flight-paths.md) (a straight run: equal drift on every landing, RAMP pushes), [depth-pop.md](depth-pop.md)
 - [speed-driven-fx.md](speed-driven-fx.md)

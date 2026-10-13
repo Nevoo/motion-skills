@@ -8,6 +8,8 @@ tags: [list, rotation, typography]
 
 **Use when:** cycling through several names, values or options in one spot ("built for: A → B → C"), where a vertical list would be too static and a swap would be a cut.
 
+**Optional look, not a default.** The drum is a set piece, like [tunnel.md](tunnel.md), [door-split.md](door-split.md) and [path-through-depth.md](path-through-depth.md). A piece uses at most two, each chosen because the subject calls for it: here, one slot whose value keeps changing. A flight with no set piece is complete.
+
 ## How it works
 
 The names sit around a cylinder whose axis is horizontal (x). Name `i` sits at angle `θᵢ = i·STEP − rot`, at radius R, facing outward. Only the front-facing names are visible: opacity follows `cos θ`, so names fade as they roll over the top or bottom edge.

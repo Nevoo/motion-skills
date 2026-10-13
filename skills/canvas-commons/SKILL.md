@@ -59,7 +59,7 @@ npm run render     # output/<project>.mp4 + output/<project>-sheet.jpg
 ## Scripts (copy into the project's `scripts/`)
 
 - [scripts/render.mjs](scripts/render.mjs): starts the project's Vite server and system Chrome, probes the GPU (Metal, falls back to SwiftShader), boots the editor (reloading through cold-start 504s), loads fonts, renders through the editor's renderer, stitches or collects the MP4, verifies frame counts exactly ((to − from) + 1, inclusive of the last frame), fails on console errors or missing WebGL, and writes a contact sheet (`--sheet-at` for chosen moments). `--help` lists flags.
-- [scripts/smoke.mjs](scripts/smoke.mjs): boots headless and fails on page errors, console errors, a missing Render button or no WebGL; `--stills` writes full-size frames.
+- [scripts/smoke.mjs](scripts/smoke.mjs): boots headless and fails on page errors, console errors, a missing Render button or no WebGL; reports each 504 and the packages Vite re-bundled late (add them to `optimizeDeps.include`); `--stills` writes full-size frames.
 
 Both resolve `playwright` and `vite` from the project they run in, or from a shared `node_modules` above it. Measured timings are in [references/rendering.md](references/rendering.md).
 
@@ -68,6 +68,8 @@ Both resolve `playwright` and `vite` from the project they run in, or from a sha
 [templates/project/](templates/project/) is a minimal pinned 0.4.0 project with `start`, `smoke` and `render` scripts, the WebCodecs exporter registered, and one tiny scene showing a master signal, a flex layout and a time event. Its `src/ease.ts` is a two-curve stand-in; replace it with the full curve set from `motion-craft`.
 
 ## Examples
+
+Copy only an example's render setup and helpers (vite config, scripts, assets), never its beats or timings.
 
 - [examples/explainer-2d/](examples/explainer-2d/): a 2D product explainer with typing, a pointer click, a field-to-pill morph, a count-up, column whips with the `Camera`, and a kinetic headline. Its README names the rules it demonstrates.
 

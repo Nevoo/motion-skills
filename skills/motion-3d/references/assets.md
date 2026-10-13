@@ -1,10 +1,39 @@
 # Asset API reference
 
-The four files in [../assets/](../assets/) are copy-in TypeScript. `depth.ts` and `camera-path.ts` have no imports and run anywhere, including Node for numeric checks. `makeLabelTexture.ts` needs a DOM and three.js r152+. `Three.ts` is the Canvas Commons bridge (npm `@canvas-commons/2d` 0.4.0, pinned). Its tsconfig must enable `experimentalDecorators`, which extending `@canvas-commons/2d/tsconfig.project.json` does.
+The six files in [../assets/](../assets/) are copy-in TypeScript. `legs.ts`, `camera-path.ts`, `timing-audit.ts` and `depth.ts` have no imports and run anywhere, including Node for numeric checks. `makeLabelTexture.ts` needs a DOM and three.js r152+. `Three.ts` is the Canvas Commons bridge (npm `@canvas-commons/2d` 0.4.0, pinned). Its tsconfig must enable `experimentalDecorators`, which extending `@canvas-commons/2d/tsconfig.project.json` does.
+
+## legs.ts
+
+The kinetic camera, for reels, launches, hype and identity pieces: baked landings joined by legs on named curves, over a constant drift, as a pure function of time. See [../rules/flight-paths.md](../rules/flight-paths.md). Curves are passed in, so the `motion-craft` skill's `assets/curves.ts` plugs in directly. The returned object has the `CameraPath` shape, so `applyCamera`, `findStops` and `normalisedSpeed` from `camera-path.ts` take it unchanged.
+
+| Export | Signature | What it does |
+|---|---|---|
+| `legPath` | `(landings: Landing[], legs: LegSpec[], opts?: LegPathOptions) => LegPath` | Builds the flight. Needs exactly one leg fewer than landings. Leg k ends at landing k+1's time and starts `dur` earlier, never before landing k. |
+| `LegPath.at` | `(t) => CamState` | Pose at t. Pure: any t, any order. Outside the first and last landing, the hold's drift carries on. |
+| `LegPath.velocity` / `.speed` | `(t) => V3` / `(t) => number` | d(position)/dt and its length, in world units per second. Exactly the landing's drift during a hold. Inside a leg it is analytic in poses and drift, with the curve's slope taken by a ±0.0005 difference in leg progress. |
+| `LegPath.start` / `.end` | `number` | First landing time; `opts.end`, else the last landing time. `findStops` and `normalisedSpeed` scan this range by default. |
+| `LegPath.landings` | `number[]` | Landing times, for audits. |
+| `LegPath.legs` | `{start, end, arc}[]` | Each leg's window, for audits and for placing events. |
+| `LegPath.progress` | `(leg, t) => number` | Leg k's eased progress `e`: 0 before it, 1 after it. Key events tied to the sweep on this, not on linear time. |
+| `LegPath.legAt` | `(t) => number` | Index of the leg running at t, or −1 during a hold. |
+| `driftToward` | `(from: V3, to: V3, speed) => V3` | A drift of `speed` units per second pointing from `from` to `to`, e.g. along the next leg. |
+
+Types:
+
+- `Landing {t, pos, tgt, drift?, roll?, fov?}`. `drift` is a velocity in units per second applied to position and target together (default `opts.drift`, else none). `roll` (radians, default 0) and `fov` (degrees, default `opts.fov`) are the resting values the leg bumps return to.
+- `LegSpec {dur, curve, arc?, roll?, fov?}`. `curve` is an `Ease` `(t, from?, to?) => number`. `arc` interpolates `pos − tgt` in spherical coordinates (azimuth about y, elevation, distance) the shorter way round. `roll` and `fov` are bump peaks, `peak · 4e(1 − e)`, added to the resting values blended by `e`.
+- `LegPathOptions {drift?, fov?, end?}`. `end` is where the last landing's drift is scanned to.
+
+Behaviour:
+
+- Position and velocity are continuous at every leg boundary when the curve has zero slope at both ends. Measured on a five-pose plan (GLIDE, an arc on RAMP_LONG, two RAMP punches) that peaks at 132 units/s: across a 1e-7 s probe, position jumps stay below 2e-7 units and velocity jumps below 0.005 units/s at every boundary after the first frame.
+- It throws when a leg's curve leaves 0..1 (the camera would pass its landing), when it leaves with a jump in speed (start slope above 0.05; above 1 on a leg 0 that starts at the first landing, so GLIDE at 0.4 passes there and OUT at 6.25 never does), when it doesn't settle at zero slope, and when a leg starts before its landing. Of the `motion-craft` named curves, RAMP, RAMP_LONG, IN_OUT and DRAG pass on any leg, GLIDE only on leg 0 from the first frame, and OUT, BOUNCE and ACCEL nowhere.
+- It also throws when some landing sets `fov`, or some leg has a non-zero `fov` kick, while another landing has no `fov` and `opts.fov` is unset. With `opts.fov` set, or no FOV anywhere, it never throws for this.
+- It does not check drift direction. A drift against a neighbouring leg makes the camera stop and reverse or overshoot; `findStops` at half the drift speed and 1000 Hz finds it.
 
 ## camera-path.ts
 
-Keyed camera flight as a pure function of time. Every channel (position x/y/z, target x/y/z, roll, fov) is its own monotone cubic (PCHIP) through the keys that define it. Between two keys a channel never overshoots either value, and velocity is continuous through every key. See [../rules/flight-paths.md](../rules/flight-paths.md).
+The calm-piece camera (explainers, ambient), plus the camera helpers both flights share (`applyCamera`, `findStops`, `normalisedSpeed`). A keyed flight as a pure function of time. Every channel (position x/y/z, target x/y/z, roll, fov) is its own monotone cubic (PCHIP) through the keys that define it. Between two keys a channel never overshoots either value, and velocity is continuous through every key. A leg peaks at about 1.4× its average speed, so it glides and never whips; kinetic pieces use `legs.ts`. See [../rules/flight-paths.md](../rules/flight-paths.md).
 
 | Export | Signature | What it does |
 |---|---|---|
@@ -21,6 +50,53 @@ Keyed camera flight as a pure function of time. Every channel (position x/y/z, t
 Types: `CamKey {t, pos?, tgt?, roll?, fov?}` (roll in radians, applied after lookAt; fov vertical, in degrees). `CamState {pos, tgt, roll, fov}`, where `fov` is `undefined` when nothing sets it. `PchipOptions {ends?: 'secant' | 'zero'}`: `'secant'` (default) starts and ends already moving, `'zero'` starts and ends at rest.
 
 A key whose value is a local extreme gets slope 0 in that channel, and repeated values make a flat run. The camera only stops if every position channel does that at one moment. `findStops` detects exactly that.
+
+## timing-audit.ts
+
+The pause test as numbers, run before any render is shown. A camera that creeps and background dots that drift can pass a pause test by eye, yet the viewer sees no movement. This audit counts only the copy being read while it animates, and a camera moving at a visible speed. See the `motion-craft` skill → `rules/continuous-over-cut.md` and `rules/reel-pacing.md`. No imports; runs in Node.
+
+| Export | Signature | What it does |
+|---|---|---|
+| `auditTiming` | `(o: TimingAuditOptions) => TimingAudit` | Samples `camera.speed(t)` every `step` from `start` to `end`; reports dead spots and read gaps. `ok` is true when there are none. |
+| `formatTimingAudit` | `(audit, unit?) => string` | Plain-text report: threshold, copy spans, exempt spans, dead spots, read gaps, then `TIMING PASS` or `TIMING FAIL: …`. `unit` labels speeds (default `'units/s'`). |
+| `VISIBLE_SHARE` | `0.15` | Default threshold as a share of the piece's peak camera speed. |
+
+| Option | Default | Meaning |
+|---|---|---|
+| `end` | required | last second audited |
+| `start` | 0 | first second audited |
+| `camera` | required | anything with `speed(t)`: a `CameraPath`, a `legPath`, or your own on-screen measure |
+| `copy` | required | `{name, from, to}[]`: when the copy being read visibly animates (word builds, lifts, morphs, draws). End each span where its ease has covered about 95% of its travel, not at the tween's nominal end: an ease-out tail barely moves and would hide a dead spot |
+| `reads` | `[]` | `{name, lastWordAt}[]`: when the last word of each read lands. For a word that never animates and arrives with the camera, use the arrival key time |
+| `exempt` | `[]` | `{from, to, why}[]`: spans allowed to rest, e.g. the final lockup hold |
+| `visibleSpeed` | `visibleShare` × peak | camera speed at or above which the camera counts as moving |
+| `visibleShare` | 0.15 | used when `visibleSpeed` is not given |
+| `maxDead` | 0.3 | longest allowed stretch with nothing counted as moving (s) |
+| `maxReadGap` | 0.3 | longest allowed time from a read's last word until the camera reaches `visibleSpeed` (s) |
+| `step` | 1/240 | sampling interval (s); span edges are refined by bisection |
+
+Result: `deadSpots: {from, to, dur, cameraMedian}[]`, `readGaps: {name, lastWordAt, moveAt, gap, ok, exempt?}[]`, `ok`, plus what it used: `peakSpeed`, `visibleSpeed`, `visibleShare` (`null` when set by hand), `maxDead`, `maxReadGap`, `copy`, `exempt`.
+
+- A **dead spot** is a maximal stretch longer than `maxDead` where the camera is slower than `visibleSpeed`, no `copy` span is active and no `exempt` span covers it. Dust, particles and slow drift are not inputs, so they cannot make it pass. `cameraMedian` shows how slowly the camera was drifting.
+- A **read gap** runs from `lastWordAt` to `moveAt`, the first moment the camera reaches `visibleSpeed`. If the camera is already moving, `moveAt` is that same moment. If it never moves again, `moveAt` is `null` and the gap runs to `end`. A gap over `maxReadGap` fails unless `lastWordAt` lies in an `exempt` span, which `exempt` then names. The gap ends at visible speed, not at a leg's start, so a ramped leg's slow linger counts toward it ([../rules/flight-paths.md](../rules/flight-paths.md)).
+- The 15% default falls between drift and travel on a fly → arrive → drift camera. In the `cc-flight` example the drift legs peak at 2.04 units/s, the slowest real move (the opening truck) never drops below 2.88, and 15% of the 18.02 peak is 2.70. One extreme whip lifts the threshold for everything else; pass `visibleSpeed` then.
+- `CameraPath` and `legPath` speeds measure position only, so a pure pan, roll or zoom counts as still. Pass your own `{speed(t)}` if the piece moves that way.
+
+```ts
+import {auditTiming, formatTimingAudit} from './timing-audit';
+
+const audit = auditTiming({
+  end: T.end,
+  camera: path,
+  copy: [{name: 'title builds', from: 0, to: 0.49}, {name: 'drum turns', from: 4.1, to: 5.05}],
+  reads: [{name: 'title', lastWordAt: 0.49}, {name: '05', lastWordAt: T.tunnel.arrive}],
+  exempt: [{from: 8.38, to: T.end, why: 'final lockup hold'}],
+});
+console.log(formatTimingAudit(audit));
+process.exitCode = audit.ok ? 0 : 1;
+```
+
+The runnable version is [../examples/cc-flight/scripts/audit-timing.mjs](../examples/cc-flight/scripts/audit-timing.mjs) (`npm run audit`), which derives every span from the scene's own cues.
 
 ## depth.ts
 

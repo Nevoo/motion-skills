@@ -14,7 +14,7 @@ Three variants that differ in kind, not in amount:
 - which curve family carries the key move: the calm four or the speed ramps;
 - what the focal element is.
 
-Each one must be shippable. No strawmen built to make a favourite win.
+Each one must be shippable. No strawmen built to make a favourite win. Each runs on final timing and has passed the timing audit ([verify-facts](verify-facts.md)): a variant shown on placeholder timing gets judged on the placeholder.
 
 ## Round 2: depth (up to 3×3)
 

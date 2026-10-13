@@ -10,7 +10,8 @@ Canvas Commons owns **time**. Its generator timeline and signals are the clock a
 
 1. `npm i three` (and `@types/three` for TypeScript). Any recent three.js (r152+ for the `colorSpace` API).
 2. Copy [../assets/Three.ts](../assets/Three.ts) into the project (e.g. `src/components/Three.ts`). It uses `@signal`/`@initial` decorators, so the tsconfig must extend `@canvas-commons/2d/tsconfig.project.json`, which turns on `experimentalDecorators`.
-3. Copy [../assets/depth.ts](../assets/depth.ts), [../assets/camera-path.ts](../assets/camera-path.ts) and [../assets/makeLabelTexture.ts](../assets/makeLabelTexture.ts) as needed. They're plain TypeScript with no Canvas Commons imports.
+3. Copy [../assets/depth.ts](../assets/depth.ts), [../assets/legs.ts](../assets/legs.ts) (the kinetic camera), [../assets/camera-path.ts](../assets/camera-path.ts), [../assets/timing-audit.ts](../assets/timing-audit.ts) and [../assets/makeLabelTexture.ts](../assets/makeLabelTexture.ts) as needed. They're plain TypeScript with no Canvas Commons imports.
+4. In `vite.config.ts`, add `three` and each `three/examples/jsm/...` module you import to `optimizeDeps.include`, next to the editor and the WebCodecs client (the `canvas-commons` skill → `references/setup.md`).
 
 ## Scene skeleton
 
@@ -19,7 +20,8 @@ import {Rect, makeScene2D} from '@canvas-commons/2d';
 import {all, chain, createSignal, linear, useScene, waitUntil} from '@canvas-commons/core';
 import * as THREE from 'three';
 import {Three} from '../components/Three';
-import {applyCamera, cameraPath} from '../motion/camera-path';
+import {applyCamera} from '../motion/camera-path';
+import {legPath} from '../motion/legs';
 import {OUT} from '../motion/curves';                 // the motion-craft skill's curves asset
 
 export default makeScene2D(function* (view) {
@@ -29,7 +31,7 @@ export default makeScene2D(function* (view) {
 
   const clock = createSignal(0);                       // time, for pure-function channels
   const appear = WORDS.map(() => createSignal(0));     // tweened state
-  const path = cameraPath(CAM_KEYS);
+  const path = legPath(LANDINGS, LEGS, {fov: FOV});    // a calm piece uses cameraPath(KEYS)
 
   const apply = (t: number) => {
     applyCamera(camera, path.at(t));

@@ -8,6 +8,8 @@ tags: [easing, speed-ramp, whip, reel]
 
 **Use when:** a move should feel editorial rather than polite: camera whips, whole-frame morphs, a pan across a row, a group sliding to make room.
 
+This file covers ease-curve ramps, which shape the speed of one move. An edit-style ramp that bends time for the whole frame (fast, slow-motion hang, snap) is a time remap: see [time-remap-ramps](time-remap-ramps.md). The two stack: a RAMP whip inside a remap window keeps its shape.
+
 ## How it works
 
 A speed ramp spends its time near the ends and crosses the middle in a burst. RAMP covers the middle half of its distance in 11% of its duration and peaks at 6.7× its average speed; IN_OUT needs 20% and peaks at 2.9×. That contrast is the whip. It only reads if the rest of the piece is calmer, so RAMP is reserved for camera glides and whole-frame changes. If every tween ramps, nothing whips.
@@ -81,6 +83,7 @@ const cssLinear = (e: Ease, n = 40) =>
 ## See also
 
 - [named-curves](named-curves.md)
+- [time-remap-ramps](time-remap-ramps.md): fast, slow-motion hang and snap across the whole frame
 - [column-whip](column-whip.md): RAMP between stages with a scale dip
 - [seams-and-vectors](seams-and-vectors.md): ACCEL into OUT across a cut
 - [linear-reads-cheap](linear-reads-cheap.md)

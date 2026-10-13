@@ -4,6 +4,10 @@ A calm 2D product explainer in Canvas Commons, about 8 s at 1920×1080, 60 fps (
 
 ![contact sheet](preview.jpg)
 
+## What to copy
+
+Copy the harness and helpers: `vite.config.ts`, `scripts/` and the skill assets in `src/` (`curves.ts`, `live-panel.ts`, `Cursor.tsx`, `palette.ts`). Never copy its beats or timings. They were picked for this demo, not for your subject.
+
 ## Rules it demonstrates
 
 | Rule | Where |

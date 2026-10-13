@@ -56,7 +56,7 @@ const subtitle = (t: number, at: number) => title(t, at + 0.08);
 | word stagger | 0.08–0.12s, smaller than the word duration |
 | title fade, travel | 0.6s, 0.7s over ~20px, OUT |
 | subtitle stagger | ~0.08s |
-| hold after the last word (reel) | 0.2–0.3s, a read pause |
+| read pause after the last word (reel) | 0.2–0.3s until the next move is visible; a RAMP's linger counts ([reel-pacing](reel-pacing.md)) |
 | tracking at display size | about −2% to −3% of the font size |
 
 In Canvas Commons, set `textWrap={false}` on tracked display text (`canvas-commons` → `references/txt-gotchas.md`, negative letterSpacing).

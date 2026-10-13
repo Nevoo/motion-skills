@@ -38,7 +38,7 @@ const PARAMS: Param[] = [
 
 **6. Reset and Copy.** Reset clears the overrides. Copy puts the current values on the clipboard as JSON.
 
-**7. Copy back to the defaults before rendering.** Headless renders run in a fresh browser profile with empty storage, so they only ever see the defaults. The flow: the human tunes, clicks Copy and pastes the JSON back; the agent bakes it into `DEFAULTS`; then the render matches what the human saw.
+**7. Copy back to the defaults before rendering.** Headless renders run in a fresh browser profile with empty storage, so they only ever see the defaults. The flow: the human tunes, clicks Copy and pastes the JSON back; the agent bakes it into `DEFAULTS`; then the render matches what the human saw. A render shown to the human gets judged as the piece, so it only ever carries baked, final values ([verify-facts](verify-facts.md), "Final timing only").
 
 **8. The panel never reaches the render.** It is an overlay outside the captured canvas, or hidden in render mode.
 

@@ -4,6 +4,12 @@ One continuous three.js camera flight inside Canvas Commons, about 10 s at 1920�
 
 ![contact sheet](preview.jpg)
 
+## What to copy
+
+This is a catalogue of set pieces (tunnel, drum, path through depth) on a calm spline camera, plus the render harness. Its three set pieces are over the limit of two on purpose, and it is not a model kinetic piece: reels, launches and hype pieces fly baked landings joined by ramped legs (`motion-3d` → `rules/flight-paths.md`).
+
+Copy the harness and helpers: `vite.config.ts`, `scripts/`, `src/Three.ts` and the skill assets in `src/` (`camera-path.ts`, `depth.ts`, `makeLabelTexture.ts`, `timing-audit.ts`, `live-panel.ts`, `curves.ts`). Never copy its beats, timings or set-piece choices.
+
 ## Rules it demonstrates
 
 | Rule | Where |
@@ -32,4 +38,7 @@ npm start              # editor at http://localhost:9102, with the live slider p
 npm run smoke          # headless pre-flight: page errors, Render button, WebGL
 npm run render         # output/project.mp4 + output/project-sheet.jpg
 node scripts/check-path.mjs   # speed per leg; fails if the camera ever stops
+npm run audit                 # timing audit: dead spots and read gaps; exits 1 on failure
 ```
+
+The timing audit fails here, by design: on a calm spline the camera only drifts at the 05 landing, the word drum and the path milestones, and the audit reports those three hover spots. `src/timing-audit.ts` is a copy of `motion-3d` → `assets/timing-audit.ts`.

@@ -4,6 +4,10 @@ A 3D countdown in Canvas Commons, about 4 s at 1920×1080, 60 fps (246 frames). 
 
 ![contact sheet](preview.jpg)
 
+## What to copy
+
+Copy the harness and helpers: `vite.config.ts`, `scripts/`, `src/Three.ts` and the skill assets in `src/` (`depth.ts`, `makeLabelTexture.ts`, `live-panel.ts`, `curves.ts`). Never copy its beats, timings or set-piece choices. They were picked for this demo, not for your subject.
+
 ## Rules it demonstrates
 
 | Rule | Where |

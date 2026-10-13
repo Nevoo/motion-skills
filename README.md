@@ -14,8 +14,8 @@ Most agent-made animation looks the same: fades, slides, linear drifts, a slides
 
 | Skill | What it covers | Engine |
 |---|---|---|
-| [`motion-craft`](skills/motion-craft/SKILL.md) | Motion design for any engine: eight named curves, speed ramps, pacing, camera grammar, seams and transitions, morphs, kinetic type, effects discipline, plus the pitch → variant rounds → live sliders process and render fact-checks | any |
-| [`motion-3d`](skills/motion-3d/SKILL.md) | 3D motion graphics with three.js: time → state → one `apply()`, seek-safe state, camera rig and keyed flight paths, depth-pop, pull back through text, tunnels, drums, speed-driven post FX, WebGL rendering. Hosts: Canvas Commons and HyperFrames | three.js |
+| [`motion-craft`](skills/motion-craft/SKILL.md) | Motion design for any engine: eight named curves, speed ramps on one move and whole-frame time remaps, pacing, camera grammar, seams and transitions, morphs, kinetic type, endings where the last line read becomes the logo, effects discipline, plus the pitch → variant rounds → live sliders process and fact-checks (timing audit, final timing only) before anything is shown | any |
+| [`motion-3d`](skills/motion-3d/SKILL.md) | 3D motion graphics with three.js: time → state → one `apply()`, seek-safe state, a camera that whips (baked landings joined by legs on named curves) or glides (a keyed spline, for calm pieces), depth-pop, pull back through text, optional set pieces, speed-driven post FX, a timing audit, WebGL rendering. Hosts: Canvas Commons and HyperFrames | three.js |
 | [`canvas-commons`](skills/canvas-commons/SKILL.md) | [Canvas Commons](https://github.com/canvas-commons/canvas-commons) / Motion Canvas idiom on 0.4.0: signals, layout, time events, Camera, custom components, glyph gotchas, a live slider panel, and a headless render pipeline (Metal or SwiftShader) | Canvas Commons |
 
 The skills reference each other by name. `motion-3d` and `canvas-commons` both build on `motion-craft`.
@@ -35,11 +35,11 @@ Or copy the folders under `skills/` into `~/.claude/skills/` (personal) or `.cla
 
 ## Examples
 
-Runnable Canvas Commons projects, each rendered end to end. Every one has a README naming the rules it demonstrates.
+Runnable Canvas Commons projects, each rendered end to end. Every one has a README naming the rules it demonstrates. Copy their render setup and helpers, never their beats.
 
 | Example | Shows |
 |---|---|
-| [`motion-3d/examples/cc-flight`](skills/motion-3d/examples/cc-flight/) | One continuous three.js camera flight: depth-pop title, number tunnel, ratcheting word drum, a path drawn through depth, speed-driven lens FX, a 2D lockup over 3D |
+| [`motion-3d/examples/cc-flight`](skills/motion-3d/examples/cc-flight/) | A set-piece catalogue on one continuous three.js camera flight (a calm spline, not a model reel): depth-pop title, number tunnel, ratcheting word drum, a path drawn through depth, speed-driven lens FX, a 2D lockup over 3D |
 | [`motion-3d/examples/cc-card-stack`](skills/motion-3d/examples/cc-card-stack/) | A countdown of stacked gradient pills: the camera punches to each card as it pops in, then pulls back through the headline, which hands off from a 3D plane to 2D type on the same frame |
 | [`canvas-commons/examples/explainer-2d`](skills/canvas-commons/examples/explainer-2d/) | A 2D product explainer: typing, pointer click, field-to-pill morph, count-up, column whips, kinetic headline |
 

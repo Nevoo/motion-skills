@@ -9,5 +9,7 @@ const modules = dirname(dirname(dirname(createRequire(import.meta.url).resolve('
 
 export default defineConfig({
   plugins: [canvasCommons(), webcodecs()],
+  // Vite's startup scan misses the editor page's imports and anything behind '?scene'; found late, each forces a re-bundle (504 Outdated Optimize Dep).
+  optimizeDeps: {include: ['@canvas-commons/editor', '@canvas-commons/webcodecs/client', 'three']},
   server: {fs: {allow: [searchForWorkspaceRoot(process.cwd()), modules]}},
 });

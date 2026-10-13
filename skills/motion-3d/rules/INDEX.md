@@ -11,7 +11,7 @@ One technique or principle per file. Read the architecture pair first. It's what
 
 - [camera-position-and-target](camera-position-and-target.md) — position + target (+ roll, fov), written in a fixed order; move both to translate, one to swing. *camera, rig*
 - [frame-by-fill](frame-by-fill.md) — place the camera by fill fraction with distFor / distForW, never a hand-picked Z. *camera, framing*
-- [flight-paths](flight-paths.md) — one continuous flight as a monotone keyed spline; arrive → slow drift → next; no key is a full stop. *camera, flight, continuity*
+- [flight-paths](flight-paths.md) — one continuous flight that never rests: kinetic pieces fly baked landings joined by ramped legs over a constant drift (legs.ts); calm pieces use the monotone spline (camera-path.ts). *camera, flight, continuity, speed-ramp*
 - [landing-poses-baked](landing-poses-baked.md) — author, tune and bake landing poses as constants; never measure per frame. *camera, workflow, determinism*
 - [vary-the-leg](vary-the-leg.md) — a different verb, axis or lens per leg; repeating one move turns a flight into a carousel. *camera, pacing, flight*
 
@@ -21,15 +21,15 @@ One technique or principle per file. Read the architecture pair first. It's what
 - [punch-through-stack](punch-through-stack.md) — the camera punches card-to-card down a stack as each card pops. *camera, typography, stack*
 - [pull-back-through-text](pull-back-through-text.md) — reveal the next line by dollying back through it while the front content shrinks away. *transition, camera, typography, reveal*
 - [depth-dissolve](depth-dissolve.md) — fade planes by view depth so flying through one reads as punching through it. *depth, flight, fade*
-- [door-split](door-split.md) — letters part like doors as the camera pushes through a word. *typography, flight, transition, per-letter*
+- [door-split](door-split.md) — optional set piece (at most two per piece): letters part like doors as the camera pushes through a word. *typography, flight, transition, per-letter*
 
 ## Objects and set pieces
 
 - [stacked-gradient-cards](stacked-gradient-cards.md) — overlapping word cards, each with its own gradient; the base of 3D counts and wordmarks. *typography, layout, stack*
 - [playful-tilt](playful-tilt.md) — life without lights: resting leans, unwinding pops, a group turn that straightens for the payoff. *typography, life, materials*
-- [tunnel](tunnel.md) — items on a tightening spiral down the flight axis, visible only in a window ahead, flown with a barrel roll. *flight, sequence, depth*
-- [drum-ratchet](drum-ratchet.md) — a 3D slot drum of names that slows on each name but never stops. *list, rotation, typography*
-- [path-through-depth](path-through-depth.md) — a line that draws itself through depth, with nodes popping as the head passes. *line, process, depth*
+- [tunnel](tunnel.md) — optional set piece (at most two per piece): items on a tightening spiral down the flight axis, visible only in a window ahead, flown with a barrel roll. *flight, sequence, depth*
+- [drum-ratchet](drum-ratchet.md) — optional set piece (at most two per piece): a 3D slot drum of names that slows on each name but never stops. *list, rotation, typography*
+- [path-through-depth](path-through-depth.md) — optional set piece (at most two per piece): a line that draws itself through depth, with nodes popping as the head passes. *line, process, depth*
 
 ## Text, layering, worlds
 

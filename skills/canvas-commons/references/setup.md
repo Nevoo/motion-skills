@@ -24,13 +24,13 @@ npm run render       # MP4 in output/
 npm create @canvas-commons@0.4.0 -- --name my-piece --path my-piece --language ts --plugins webcodecs
 ```
 
-It writes `package.json` with caret ranges (`^0.4.0`). Pin them to `0.4.0` exactly, then add `playwright` and the two scripts as in A. Also add the two settings the template carries (next section): `"skipLibCheck": true` under `compilerOptions` in `tsconfig.json`, or `npm run build` fails inside 0.4.0's own typings; and, when the project shares a `node_modules` higher up, the `server.fs.allow` entry in `vite.config.ts`, or the editor never boots.
+It writes `package.json` with caret ranges (`^0.4.0`). Pin them to `0.4.0` exactly, then add `playwright` and the two scripts as in A. Also add the three settings the template carries (next section): `"skipLibCheck": true` under `compilerOptions` in `tsconfig.json`, or `npm run build` fails inside 0.4.0's own typings; the `optimizeDeps.include` list in `vite.config.ts`, or a cold start can re-bundle and reload the editor; and, when the project shares a `node_modules` higher up, the `server.fs.allow` entry in `vite.config.ts`, or the editor never boots.
 
 ## What is in a project
 
 ```
 package.json          pinned @canvas-commons/* 0.4.0, vite 8, playwright (for the scripts)
-vite.config.ts        canvasCommons() plus exporter plugins, e.g. webcodecs(); allows a shared node_modules
+vite.config.ts        canvasCommons() plus exporter plugins, e.g. webcodecs(); pre-bundles what the editor and scenes import; allows a shared node_modules
 tsconfig.json         extends @canvas-commons/2d/tsconfig.project.json (JSX, decorators); skipLibCheck
 src/project.ts        makeProject({scenes: [...], plugins: [...]})
 src/project.meta      written by the editor: resolution, fps, exporter, background
@@ -82,9 +82,10 @@ export default makeProject({
 });
 ```
 
-Two settings in the template come from running 0.4.0 for real:
+Three settings in the template come from running 0.4.0 for real:
 
 - **`server.fs.allow`** in `vite.config.ts` includes the folder that holds `@canvas-commons/editor`. When several projects share one `node_modules` higher up (a monorepo, or this skill's examples), Vite otherwise refuses to serve the editor's stylesheet and the 2D editor plugin, and the editor never boots. In a project with its own `node_modules` the line changes nothing.
+- **`optimizeDeps.include`** in `vite.config.ts` lists `@canvas-commons/editor` and `@canvas-commons/webcodecs/client`. Vite's startup scan sees neither the editor page's imports nor anything behind a `?scene` import, so it meets those packages only when the browser asks for them. It then re-bundles, and can answer 504 "Outdated Optimize Dep" and reload the editor. Add every other package your scenes import, written exactly as imported: for a three.js scene, `three` and each `three/examples/jsm/...` module. Leave out `@canvas-commons/core` and `@canvas-commons/2d`, which the plugin keeps out of pre-bundling. `npm run smoke` names any package Vite still had to re-bundle late.
 - **`skipLibCheck: true`** in `tsconfig.json`. With TypeScript 5.9, `tsc` reports errors inside 0.4.0's own typings (`chroma-js` has no types, `project.d.ts` uses `export =`, and `@types/dom-webcodecs` collides with `lib.dom`), so `npm run build` would fail on code you did not write.
 
 Several scenes play back to back. For a piece that should feel like one continuous space, prefer one scene with one camera and move between stages inside it (the `motion-craft` skill covers why).

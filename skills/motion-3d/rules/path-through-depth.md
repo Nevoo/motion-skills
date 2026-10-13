@@ -8,6 +8,8 @@ tags: [line, process, depth]
 
 **Use when:** showing a sequence of steps (a pipeline, a workflow, a route) as one continuous gesture rather than a row of boxes.
 
+**Optional look, not a default.** The path is a set piece, like [tunnel.md](tunnel.md), [drum-ratchet.md](drum-ratchet.md) and [door-split.md](door-split.md). A piece uses at most two, each chosen because the subject calls for it: here, a process or route the viewer should follow. A flight with no set piece is complete.
+
 ## How it works
 
 - **Curve.** A smooth curve through a few control points whose z alternates in front of and behind the label plane, so the line visibly weaves through depth as the camera drifts.

@@ -7,7 +7,8 @@
     "start": "vite --port 9102",
     "build": "tsc && vite build",
     "smoke": "node scripts/smoke.mjs --port 9102",
-    "render": "node scripts/render.mjs --port 9102"
+    "render": "node scripts/render.mjs --port 9102",
+    "audit": "node scripts/audit-timing.mjs"
   },
   "dependencies": {
     "@canvas-commons/2d": "0.4.0",

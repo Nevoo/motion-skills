@@ -1,6 +1,6 @@
 ---
 name: motion-3d
-description: 3D motion graphics with three.js for rendered video, in any engine. Time drives one state object, ONE apply() writes it to the scene, and every value is computed from t alone, so any frame can be seeked. Covers the camera rig (position + target, frame by fill fraction, continuous keyed flight paths that never stop), 3D kinetic type (depth-pop, stacked gradient cards, punch through a stack, pull back through text, door splits, tunnels, ratcheting drums), text baked to textures, depth dissolves, layering, pixel-space worlds, speed-driven post FX, lighting basics and WebGL rendering (GPU probe, SwiftShader fallback, supersampling, font readiness). Hosts are Canvas Commons and HyperFrames. Use for "3D motion graphics", "three.js video", "camera flight", "fly through", "kinetic 3D type", "pull back through text", "WebGL render", or a 3D intro, reel or title sequence.
+description: 3D motion graphics with three.js for rendered video, in any engine. Time drives one state object, ONE apply() writes it to the scene, and every value is computed from t alone, so any frame can be seeked. Covers the camera rig (position + target, frame by fill fraction, never-resting flights of ramped legs between baked landings, or a spline for calm pieces), 3D kinetic type (depth-pop, stacked gradient cards, punch through a stack, pull back through text, optional door splits, tunnels and drums), text baked to textures, depth dissolves, layering, pixel-space worlds, speed-driven post FX, lighting and WebGL rendering (GPU probe, SwiftShader fallback, font readiness). Hosts are Canvas Commons and HyperFrames. Use for "3D motion graphics", "three.js video", "camera flight", "fly through", "kinetic 3D type", "pull back through text", "WebGL render", or a 3D intro, reel or title sequence.
 ---
 
 # motion-3d
@@ -12,7 +12,7 @@ Engine-agnostic doctrine and drop-in code for 3D motion graphics rendered to vid
 ```ts
 // host: gives t (seconds). state: tweened by the host or computed from t. apply: the only writer.
 function apply(t: number) {
-  applyCamera(camera, path.at(t));                       // camera from a keyed monotone spline
+  applyCamera(camera, path.at(t));                       // landings + ramped legs over a drift (calm pieces: a spline)
   items.forEach((it, i) => {
     const a = state.appear[i];                           // entrance 0..1, tweened by the host
     const d = viewDepth(it.worldPos, camera.position, forward);
@@ -32,8 +32,8 @@ function apply(t: number) {
 2. **Every value is computed from t alone.** No wall clocks, `+=` accumulators, damping toward last frame, unseeded randomness, or post passes that need frame history. Renderers seek, replay and split frame ranges.
 3. **The camera is position + target** (+ roll, fov), written in a fixed order. Move both to translate, and move one only when you mean to swing.
 4. **Frame by fill fraction** (`distFor`, `distForW`), never by a hand-picked Z.
-5. **Hype and identity pieces are one continuous flight.** Stop, show, whip, stop reads as a slideshow. The camera never rests, content depth-pops along the path, and the camera flies through planes instead of cutting to them. Product demos can keep discrete stages joined by RAMP glides.
-6. **Vary the leg and bake the landings.** Each move gets a different verb, and each landing pose is authored once and stored as data.
+5. **One continuous flight, built for the register.** Kinetic pieces (reels, launches, hype, identity) fly baked landings joined by ramped legs over a constant drift (`legs.ts`). A spline leg peaks at about 1.4× its average speed and never whips. Calm pieces (explainers, ambient) glide on the monotone spline (`camera-path.ts`). Either way the camera never rests, content depth-pops along the path, and the camera flies through planes instead of cutting to them. Product demos can keep discrete stages joined by RAMP glides.
+6. **Vary the leg, bake the landings, ration the set pieces.** Each move gets a different verb, and each landing pose is authored once and stored as data. Tunnel, drum, door split and path through depth are optional looks: at most two per piece, chosen because the subject calls for them, never by default.
 7. **Copy lands frontal, sharp and framed.** FX ride the camera's speed, so they vanish at every landing. Every whip may get a subtle lens touch, but a strong smear is reserved for one to three hero snaps. No exposure flash on every beat, and no HUD chrome.
 8. **Bake text big into textures** (mipmaps, sRGB, anisotropy), after the webfonts have loaded.
 9. **Choose sticker or depth layering per overlapping group,** and never mix them by accident.
@@ -46,7 +46,7 @@ function apply(t: number) {
 | How should a 3D piece be structured? Who writes what? | [rules/state-apply-architecture.md](rules/state-apply-architecture.md), [rules/pure-function-of-time.md](rules/pure-function-of-time.md) |
 | Camera moves: translate vs swing, roll, fov | [rules/camera-position-and-target.md](rules/camera-position-and-target.md) |
 | How far should the camera be? | [rules/frame-by-fill.md](rules/frame-by-fill.md) |
-| One continuous flight through a world | [rules/flight-paths.md](rules/flight-paths.md), [rules/vary-the-leg.md](rules/vary-the-leg.md), [rules/landing-poses-baked.md](rules/landing-poses-baked.md) |
+| One continuous flight; landings, legs and drift; why a spline can't whip | [rules/flight-paths.md](rules/flight-paths.md), [rules/vary-the-leg.md](rules/vary-the-leg.md), [rules/landing-poses-baked.md](rules/landing-poses-baked.md) |
 | Elements appearing in depth | [rules/depth-pop.md](rules/depth-pop.md) |
 | A 3D word count, tagline or wordmark | [rules/stacked-gradient-cards.md](rules/stacked-gradient-cards.md), [rules/punch-through-stack.md](rules/punch-through-stack.md), [rules/playful-tilt.md](rules/playful-tilt.md) |
 | Transition to the next line without a cut | [rules/pull-back-through-text.md](rules/pull-back-through-text.md), [rules/depth-dissolve.md](rules/depth-dissolve.md), [rules/door-split.md](rules/door-split.md) |
@@ -70,27 +70,35 @@ Copy them into the project. Signatures, options and behaviour: [references/asset
 
 | File | What it gives you |
 |---|---|
-| [assets/camera-path.ts](assets/camera-path.ts) | `cameraPath(keys)`: per-channel monotone (PCHIP) flight with `.at(t)`, `.velocity(t)`, `.speed(t)`; `applyCamera` (fixed write order); `findStops` (does it ever rest?); `normalisedSpeed` (drives FX); `sectionTimes` (arrive / drift keys). No imports. |
+| [assets/legs.ts](assets/legs.ts) | `legPath(landings, legs, opts)`: the kinetic camera. Baked landings with a drift, legs on named curves (arc, roll and FOV bumps), shaped like `CameraPath` so `applyCamera`, `findStops` and `normalisedSpeed` take it. `progress(k, t)`, `legs` and `landings` for audits and events. `driftToward`. No imports. |
+| [assets/camera-path.ts](assets/camera-path.ts) | `cameraPath(keys)`: the calm-piece camera, a per-channel monotone (PCHIP) flight with `.at(t)`, `.velocity(t)`, `.speed(t)`. Shared helpers: `applyCamera` (fixed write order), `findStops` (does it ever rest?), `normalisedSpeed` (drives FX). `sectionTimes` (arrive / drift keys). No imports. |
+| [assets/timing-audit.ts](assets/timing-audit.ts) | `auditTiming({end, camera, copy, reads, exempt})`: dead spots (no copy animating and the camera below a visible speed; slow drift and background dots don't count) and read gaps (last word until the camera reaches that visible speed, 0.3 s max); `formatTimingAudit` prints the report. Takes any camera with `speed(t)`. No imports. |
 | [assets/depth.ts](assets/depth.ts) | `distFor`, `distForW`, `distToFit`, `pxDistance`, `pxToWorld`, `worldToPx`, `apparentScale`, `viewDepth`, `depthFade`, `windowFade`, `smoothstep`. No imports. |
 | [assets/makeLabelTexture.ts](assets/makeLabelTexture.ts) | `makeLabelTexture(text, opts)` and `makeLabelPlane(text, worldHeight, opts)`: font family, weight, ink, pill and gradients as options; repaints and resizes when the webfont lands. `loadFonts(specs)`. Needs three. |
 | [assets/Three.ts](assets/Three.ts) | Canvas Commons bridge node: offscreen WebGLRenderer blitted into the 2D canvas, `quality` supersampling, `setSize` only on change, optional `composer` for post FX. |
 
 ## Examples
 
-Runnable Canvas Commons projects. Each README names the rules it demonstrates with file and line. Copy one, render it, then adapt it.
+Runnable Canvas Commons projects. Each README names the rules it demonstrates with file and line. Copy only their render setup and helpers (vite config, scripts, the Three bridge, assets), never their beats, timings or set-piece choices.
 
-- [examples/cc-flight/](examples/cc-flight/): one continuous flight with depth-pop title, tunnel, drum, path through depth, speed-driven lens FX and a 2D lockup over 3D.
+- [examples/cc-flight/](examples/cc-flight/): a catalogue of set pieces (depth-pop title, tunnel, drum, path through depth, speed-driven lens FX, a 2D lockup over 3D) on a calm spline camera, plus the render harness. Its three set pieces are over the limit on purpose. It is not a model kinetic piece.
 - [examples/cc-card-stack/](examples/cc-card-stack/): stacked gradient cards with punch-through, then a pull back through the headline into 2D type.
 
 ## Reviewing a 3D piece
 
-1. Does anything animate outside apply(), or depend on the previous frame? Re-render one frame in isolation and compare.
-2. Is any camera distance a magic number? Express it as a fill fraction.
-3. Does the camera rest anywhere it shouldn't? Run `findStops`.
-4. Is every read frontal, sharp and long enough, with FX at zero?
-5. Do several legs in a row share the same verb? Vary them.
-6. Is any text in a fallback face, soft, or shimmering? Check font readiness, the bake size and mipmaps.
-7. Do overlapping planes flicker? Choose the layering mode per group.
-8. Is there one background colour throughout, and no HUD chrome?
+Walk every step for every 3D piece. Anything shown to the human uses final timing, never placeholder timing.
+
+1. Run the timing audit ([assets/timing-audit.ts](assets/timing-audit.ts)) before any render is shown.
+2. Does anything animate outside apply(), or depend on the previous frame? Re-render one frame in isolation and compare.
+3. Is any camera distance a magic number? Express it as a fill fraction.
+4. Does the camera rest or reverse anywhere? Run `findStops`; on a kinetic flight, at half the drift speed and 1000 Hz.
+5. Is every read frontal, sharp, long enough and no longer? The camera moves within 0.3 s of the last word landing.
+6. Pause on any frame. Is the copy being read, or is the camera visibly moving? Background dots and a slow drift don't count.
+7. Is a kinetic piece flying on the spline, or do several legs in a row share a verb? Fly it on `legPath`, and vary the legs.
+8. Count the set pieces (tunnel, drum, door split, path through depth). More than two fails.
+9. Is any text in a fallback face, soft, or shimmering? Check font readiness, the bake size and mipmaps.
+10. Do overlapping planes flicker? Choose the layering mode per group.
+11. Is there one background colour throughout, and no HUD chrome?
+12. Walk the `motion-craft` skill's "it doesn't feel premium" review. It is required for every 3D piece, not background reading.
 
 *Idea adapted from HyperFrames (Apache-2.0).*

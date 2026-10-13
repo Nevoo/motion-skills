@@ -8,6 +8,8 @@ tags: [flight, sequence, depth]
 
 **Use when:** a run of 5–12 items (a timeline, a list, a countdown) should be flown through one after another, each readable for a moment, without the far ones cluttering the frame.
 
+**Optional look, not a default.** The tunnel is a set piece, like [drum-ratchet.md](drum-ratchet.md), [door-split.md](door-split.md) and [path-through-depth.md](path-through-depth.md). A piece uses at most two, each chosen because the subject calls for it: here, a sequence the viewer should travel through. A flight with no set piece is complete.
+
 ## How it works
 
 - **Spacing along −z.** Items sit at regular depth intervals down the flight axis, with the last item further out as the landing.
@@ -37,21 +39,20 @@ ITEMS.forEach((text, k) => {
   // visibility: windowed, except the landing item
   register(mesh, d => state.tunnelOn * (k === last ? 1 : windowFade(d, WINDOW, 2.5)));
 });
-// Camera keys: enter the axis, roll mid-flight, arrive short of the last item, drift.
-//   {t: a,           pos: [0.8, -0.15, 8], tgt: [0.1, 0, 0], roll: 0}
-//   {t: a + fly / 2, roll: -0.35}
-//   {t: a + fly,     pos: [0, 0, landZ],       tgt: [0, 0, endZ],       roll: 0}
-//   {t: a + fly + 0.5, pos: [0, 0, landZ - 0.5], tgt: [0, 0, endZ - 0.6]}
+// Camera (legPath): enter the axis, one leg with a barrel roll, land short of the last item, drift on.
+//   landing {t: a,       pos: [0.8, -0.15, 8],  tgt: [0.1, 0, 0],   drift: [0, 0, -1]}
+//   leg     {dur: fly,   curve: IN_OUT, roll: -0.35}
+//   landing {t: a + fly, pos: [0, 0, landZ],    tgt: [0, 0, endZ],  drift: [0, 0, -1]}
 ```
 
-Note that z(k) runs from −4 toward the landing, so the first item sits nearest the camera.
+Note that z(k) runs from −4 toward the landing, so the first item sits nearest the camera. The tunnel leg uses IN_OUT: RAMP covers the middle half of its distance in 11 % of the time, so the middle items would whip past unread. On the calm spline, key the roll alone at mid-flight and add a drift key 0.5 units past the landing ([flight-paths.md](flight-paths.md)).
 
 ## Values
 
 | Parameter | Value |
 |---|---|
 | Items | 5–12 |
-| Flight time through the tunnel | 1.5–2 s (≈ 0.2 s per item) |
+| Flight time through the tunnel | 1.5–2 s (≈ 0.2 s per item). The items are read during the leg, so it can't shrink to a whip. In a kinetic piece it is the one long move, replacing the ≈ 1.15 s reveal, with 5–8 items |
 | Window ahead of the camera | ≈ 7 units, soft edge 2.5 |
 | Spiral radius | 1.5, vertical squash 0.6, tightening to 55 % |
 | Angle step | ≈ 1.15 rad per item |

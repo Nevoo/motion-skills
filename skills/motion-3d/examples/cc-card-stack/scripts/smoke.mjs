@@ -33,10 +33,13 @@ const ROOT = process.cwd();
 if (!existsSync(join(ROOT, 'package.json'))) fail('run this from the project directory (no package.json here)');
 const req = createRequire(join(ROOT, 'package.json'));
 const {chromium} = await load('playwright');
-const {createServer} = await load('vite');
+const {createLogger, createServer} = await load('vite');
 
 let browser = null;
 let server = null;
+const lateDeps = new Set();
+const outdated = [];
+const lateHint = () => `add ${lateDeps.size ? [...lateDeps].join(', ') : 'what Vite found late'} to optimizeDeps.include in vite.config.ts`;
 const cleanup = async () => {
   await browser?.close().catch(() => {});
   await server?.close().catch(() => {});
@@ -46,7 +49,16 @@ process.on('SIGINT', () => cleanup().then(() => process.exit(130)));
 let exitCode = 1;
 try {
   if (args.fresh) rmSync(join(ROOT, 'node_modules', '.vite'), {recursive: true, force: true});
-  server = await createServer({root: ROOT, logLevel: 'warn', server: args.port ? {port: args.port} : {}});
+  // Vite names deps it had to re-bundle only at info level; keep warn output, but catch that line.
+  const viteLog = createLogger('warn');
+  const logger = Object.assign(Object.create(viteLog), {
+    info(msg, opts) {
+      const m = msg.replace(/\x1b\[[0-9;]*m/g, '').match(/dependenc(?:y|ies) optimized: (.+)/);
+      if (m) for (const dep of m[1].split(',')) lateDeps.add(dep.trim());
+      viteLog.info(msg, opts);
+    },
+  });
+  server = await createServer({root: ROOT, customLogger: logger, server: args.port ? {port: args.port} : {}});
   await server.listen();
   const url = server.resolvedUrls?.local?.[0] ?? `http://localhost:${server.config.server.port}/`;
   log(`dev server ${url}`);
@@ -60,6 +72,12 @@ try {
     pageErrors.push(e.message);
     console.log(`[pageerror] ${e.message}`);
   });
+  let phase = 'attempt 1';
+  page.on('response', r => {
+    if (r.status() !== 504) return;
+    outdated.push({phase, url: r.url()});
+    log(`504 ${r.statusText() || 'Outdated Optimize Dep'} on ${phase}: ${r.url()} (Vite re-bundled a dependency it found late; ${lateHint()})`);
+  });
   page.on('console', m => {
     if (m.type() === 'error') {
       consoleErrors.push(m.text());
@@ -67,10 +85,12 @@ try {
     } else if (m.type() === 'warning') console.log(`[page:warning] ${m.text()}`);
   });
 
-  const booted = await bootEditor(page, url, () => {
+  const booted = await bootEditor(page, url, attempt => {
+    phase = `attempt ${attempt}`;
     pageErrors.length = 0;
     consoleErrors.length = 0;
   });
+  phase = 'after boot';
   // Recalculation runs every frame, so errors in later beats surface here.
   await page.waitForFunction(() => window.commons?.playback.duration > 0, null, {timeout: 120_000}).catch(() => {});
   await page.evaluate(() => document.fonts.ready);
@@ -128,10 +148,12 @@ try {
   console.log(`#render:      ${hasRender}`);
   console.log(`pageerrors:   ${pageErrors.length}`);
   console.log(`console errs: ${consoleErrors.length}${args.lenient ? ' (lenient: not failing)' : ''}`);
+  console.log(`504s:         ${outdated.length}${outdated.length ? ` (on ${[...new Set(outdated.map(o => o.phase))].join(', ')})` : ''}`);
+  if (lateDeps.size) console.log(`late deps:    ${[...lateDeps].join(', ')} (Vite re-bundled for these after startup; add them to optimizeDeps.include in vite.config.ts)`);
   if (info) console.log(`project:      ${JSON.stringify(info)}`);
   for (const s of stills) console.log(`still:        ${s}`);
   const ok = Object.values(checks).every(Boolean);
-  console.log(`SMOKE ${ok ? 'PASS' : 'FAIL'} ${JSON.stringify(checks)}`);
+  console.log(`SMOKE ${ok ? 'PASS' : 'FAIL'} ${JSON.stringify(checks)} 504s=${outdated.length}`);
   exitCode = ok ? 0 : 1;
 } catch (e) {
   console.error(`[smoke] ${e?.stack ?? e}`);
@@ -214,7 +236,7 @@ async function launchWithGpu(choice) {
 async function bootEditor(page, url, onAttempt = () => {}) {
   const origin = new URL(url).origin;
   for (let attempt = 1; attempt <= 4; attempt++) {
-    onAttempt();
+    onAttempt(attempt);
     const failed = [];
     const onResponse = r => r.status() >= 500 && r.url().startsWith(origin) && failed.push(`${r.status()} ${r.url()}`);
     page.on('response', onResponse);

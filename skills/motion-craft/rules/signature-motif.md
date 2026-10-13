@@ -1,6 +1,6 @@
 ---
 name: signature-motif
-description: Pick one repeating visual as the spine of a reel before animating anything; the eye learns it and uses it to parse the montage. Four proven motif concepts and a reel checklist.
+description: Pick one repeating visual as the spine of a reel before animating anything, found in the subject's own material first; the eye learns it and uses it to parse the montage, and its elements persist to re-form into the logo. Four proven motif concepts and a reel checklist.
 tags: [reel, motif, structure, concept]
 ---
 
@@ -11,6 +11,10 @@ tags: [reel, motif, structure, concept]
 ## How it works
 
 A dense reel without a spine reads as noise. Pick one visual that returns three or four times, each time meaning the same thing, and decide it before animating anything. The eye learns it on its first appearance and uses it to parse everything after. Reel energy comes from fast morphing around that spine, not from fast cutting: a strong 45-second launch reel can get by with fewer than four hard cuts.
+
+**Find the motif in the subject first.** Before inventing one, look at what the subject already owns: its mark, its product UI, its type, a real artefact of its work. A motif taken from the logo's geometry or a recurring piece of the interface ties the reel to its subject; an invented one could belong to anyone. Invent only when the subject's own material offers nothing that can move.
+
+**The elements persist and re-form.** The motif is one population that travels the whole piece: it forms a line, streams through a whip, forms the next thing. At the end, the last thing read breaks into those elements and they re-form into the logo ([last-read-becomes-logo](last-read-becomes-logo.md)). Never build the ending from new material.
 
 Four proven concepts:
 
@@ -58,12 +62,15 @@ Drop-in components for the ring burst and the pointer exist in `canvas-commons`.
 5. **Counters ride the same progress** as the burst they measure.
 6. **One background colour throughout,** so every card and accent pops from the same field.
 7. **One palette.** Never mix the calm and the reel palettes in one piece.
+8. **The ending re-forms the motif.** The last line read becomes the logo, in the frame the camera already holds.
 
 ## Pitfalls
 
 - **Choosing the motif after animating.** It ends up bolted on rather than structural.
 - **A motif that changes meaning.** If the burst means "thinking" once and "success" later, the viewer stops parsing it.
+- **An invented motif when the subject had one.** It looks generic next to the real mark and UI.
 - **Random numbers drawn per frame** in a dissolve. It flickers, and two renders differ.
+- **A logo built from new elements at the end.** The spine stops one beat early.
 
 ## See also
 
@@ -71,3 +78,4 @@ Drop-in components for the ring burst and the pointer exist in `canvas-commons`.
 - [morph-not-crossfade](morph-not-crossfade.md)
 - [one-background](one-background.md)
 - [reel-pacing](reel-pacing.md)
+- [last-read-becomes-logo](last-read-becomes-logo.md): how the motif ends the piece

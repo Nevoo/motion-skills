@@ -1,6 +1,6 @@
 ---
 name: vary-the-move
-description: A journey of identical camera moves reads as a slideshow; keep the grammar (direction, one camera, curve family) but vary the verbs and lengths from leg to leg. Camera curves are OUT, IN_OUT, RAMP, RAMP_LONG and GLIDE, never spring or back.
+description: A journey of identical camera moves reads as a slideshow; keep the grammar (direction, one camera, curve family) but vary the verbs and lengths from leg to leg. Camera curves are OUT, IN_OUT, RAMP, RAMP_LONG and GLIDE, never spring or back; a 3D flight's legs after a hold take RAMP, RAMP_LONG or IN_OUT.
 tags: [camera, variety, pacing]
 ---
 
@@ -31,6 +31,8 @@ Keep the transition vocabulary small: two or three transition types per piece, r
 
 **No spring, back or elastic on a camera.** An overshooting camera swings the whole frame past its mark and back, which looks unsteady and, in 3D, can make viewers queasy. Camera curves are OUT, IN_OUT, RAMP, RAMP_LONG and GLIDE (GLIDE for drifts and for moves that flow on from a previous one). BOUNCE never; ACCEL only as the exit side of a velocity-matched cut (seams-and-vectors), never on a leg that has to land.
 
+**A 3D flight of landings and legs is stricter.** Each leg after a hold leaves a drifting camera, so it uses RAMP, RAMP_LONG or IN_OUT: their zero start slope keeps velocity continuous. GLIDE is only for leg 0 when the camera moves from the first frame. OUT stays for 2D or tweened camera moves that flow on from a moving start. See `motion-3d` → `rules/flight-paths.md`.
+
 ## Recipe
 
 Write the legs down as data, then lint them before animating.
@@ -51,6 +53,10 @@ const repeats = legs.filter((leg, i) =>
   i > 0 && leg.verb === legs[i - 1].verb && Math.abs(leg.dur - legs[i - 1].dur) < 0.1);
 const cameraCurves: CurveName[] = ['OUT', 'IN_OUT', 'RAMP', 'RAMP_LONG', 'GLIDE'];
 const badCurves = legs.filter(leg => cameraCurves.indexOf(leg.ease) < 0);
+// The same legs as a 3D flight of landings and legs: GLIDE only on leg 0 from the first frame.
+const flightCurves: CurveName[] = ['RAMP', 'RAMP_LONG', 'IN_OUT'];
+const badFlightCurves = legs.filter((leg, i) =>
+  flightCurves.indexOf(leg.ease) < 0 && !(i === 0 && leg.at === 0 && leg.ease === 'GLIDE'));
 ```
 
 ## Values
@@ -59,10 +65,10 @@ const badCurves = legs.filter(leg => cameraCurves.indexOf(leg.ease) < 0);
 |---|---|---|
 | stage push or punch | OUT or IN_OUT | 0.5–0.9s |
 | 3D stack punch (`motion-3d`, punch through a stack) | RAMP | 0.38–0.45s |
-| push through a word inside a continuously creeping 3D flight (`motion-3d`, vary the leg) | RAMP, RAMP_LONG or OUT | 0.3–0.6s |
-| pull back, reveal | RAMP_LONG or IN_OUT | 1.2–2s |
+| push through a word inside a continuously creeping 3D flight (`motion-3d`, vary the leg) | RAMP or RAMP_LONG | 0.3–0.6s |
+| pull back, reveal | RAMP_LONG or IN_OUT | 1.2–2s; up to ≈ 1.15s as the one reveal of a kinetic 3D flight |
 | whip | RAMP | 0.7–0.9s |
-| drift between legs | GLIDE | the whole hold |
+| drift between legs | a constant velocity in a 3D flight; GLIDE for a tweened camera | the whole hold |
 
 ## Pitfalls
 

@@ -1,6 +1,6 @@
 ---
 name: continuous-over-cut
-description: Premium motion reads as one continuous thing; replace move-hold-move, chained stops and fades with one glide, overlapped hand-offs and morphs, and pass the pause test.
+description: Premium motion reads as one continuous thing; replace move-hold-move, chained stops and fades with one glide, overlapped hand-offs and morphs, and pass the pause test on the copy or the camera, not on drift.
 tags: [pacing, continuity, camera, transitions]
 ---
 
@@ -20,7 +20,11 @@ Five habits keep motion continuous:
 4. **Morph instead of crossfading; tween layout changes instead of cutting them.** See morph-not-crossfade and no-jump-cut-relayouts.
 5. **Keep one direction of travel.** Continuations move the same way (down, then down again). A change of direction reads as "a different thing now".
 
-**The pause test.** Freeze playback on any frame you like. Something that matters should still be in motion: content arriving, the camera on its way somewhere, a number climbing. If everything has been still for longer than a read pause, that frame sits in a dead spot.
+**The pause test.** Freeze playback on any frame you like. Something that matters should still be in motion: the copy being read (a word arriving, a line lifting off) or the camera visibly on its way somewhere. If neither has moved for longer than a read pause, that frame sits in a dead spot.
+
+**Drift and background dots don't count.** A camera creeping a few pixels a second, a particle field streaming past, a slow parallax: a viewer reads all of them as no movement. They keep a hold alive; they don't make it motion. Judge the test on the copy and the camera alone. The final lockup's creep is the one sanctioned hold.
+
+**Observed failure:** a piece passed a frame-by-frame pause test on a creeping camera and drifting background dots, and a viewer still described it as having no movement.
 
 ## Choosing the structure
 
@@ -52,7 +56,8 @@ A cut is right when the next content is a different thing in a different place a
 
 ## Pitfalls
 
-- **Long holds as "breathing room".** In a reel a hold is 0.2–0.3s. Reading happens during builds.
+- **Long holds as "breathing room".** In a reel the pause after a read is 0.2–0.3s until the next move is visible, so before a RAMP leg the hold is 0–0.1s (its linger counts). Reading happens during builds.
+- **Passing the pause test on drift.** A creeping camera or drifting dots under a parked line is a hold. Move the copy or the camera.
 - **Fixing choppiness with crossfades.** A crossfade is a softer cut, still a cut.
 - **Fades between stages.** Every fade is a dead spot. Move the camera instead.
 - **A camera that rests while the leading element keeps travelling.** The two decouple and the frame feels unanchored. (A camera parked at a stage while its content builds in place is fine; see column-whip.)

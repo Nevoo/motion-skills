@@ -20,6 +20,8 @@ const speed = normalisedSpeed(path, {floor: CRUISE, curve: 1.35});
 
 For a camera built from tweens rather than keys, sample its pure position function with a central difference and normalise by the maximum over the piece. See [pure-function-of-time.md](pure-function-of-time.md).
 
+Under a whole-frame time remap, measure the speed the viewer sees: differentiate the composed position `pos(warp.tau(t))` in output time, which equals |pos'(τ)|·r(t), and normalise after the remap (see `motion-craft` → `rules/time-remap-ramps.md`).
+
 ## Recipe: what the speed drives
 
 ```ts
